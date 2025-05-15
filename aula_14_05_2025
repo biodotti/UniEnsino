@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resposta</title>
+</head>
+<body>
+<?php
+// Interface definindo o contrato
+interface Contrato {
+    public function calcularSalario(): float;
+}
+
+// Classe abstrata com estrutura base
+abstract class FuncionarioBase implements Contrato {
+    protected string $nome;
+    protected string $cargo;
+    protected float $salarioBase;
+    protected string $cpf; // Novo atributo CPF
+
+    public function __construct(string $nome, string $cargo, float $salarioBase, string $cpf) {
+        $this->nome = $nome;
+        $this->cargo = $cargo;
+        $this->salarioBase = $salarioBase;
+        $this->cpf = $cpf;
+    }
+
+    public function getNome(): string {
+        return $this->nome;
+    }
+
+    public function getCargo(): string {
+        return $this->cargo;
+    }
+
+    public function getCpf(): string {
+        return $this->cpf;
+    }
+
+    public function setSalarioBase(float $salario): void {
+        if ($salario > 0) {
+            $this->salarioBase = $salario;
+        }
+    }
+
+    public function getSalarioBase(): float {
+        return $this->salarioBase;
+    }
+
+    abstract public function calcularSalario(): float;
+}
+
+// Funcionário CLT com bônus
+class FuncionarioCLT extends FuncionarioBase {
+    public function calcularSalario(): float {
+        return $this->salarioBase * 1.2;
+    }
+}
+
+// Funcionário PJ sem bônus
+class FuncionarioPJ extends FuncionarioBase {
+    public function calcularSalario(): float {
+        return $this->salarioBase;
+    }
+}
+
+// Funcionário Temporário com desconto
+class FuncionarioTemporario extends FuncionarioBase {
+    private int $mesesContrato;
+
+    public function __construct(string $nome, string $cargo, float $salarioBase, string $cpf, int $mesesContrato) {
+        parent::__construct($nome, $cargo, $salarioBase, $cpf);
+        $this->mesesContrato = $mesesContrato;
+    }
+
+    public function getMesesContrato(): int {
+        return $this->mesesContrato;
+    }
+
+    public function calcularSalario(): float {
+        return $this->salarioBase * 0.9;
+    }
+}
+
+// Testando o sistema
+$funcionarios = [];
+$funcionarios[] = new FuncionarioCLT("Ana", "Desenvolvedora", 4000, "123.456.789-00");
+$funcionarios[] = new FuncionarioPJ("Carlos", "Analista", 5000, "987.654.321-00");
+$funcionarios[] = new FuncionarioTemporario("Julia", "Suporte", 3000, "321.654.987-00", 6);
+$funcionarios[] = new FuncionarioCLT("Thiago", "Gerente Administrativo", 8000, "456.789.123-00");
+$funcionarios[] = new FuncionarioTemporario("Joaquim", "Estagiário", 1500, "654.987.321-00", 3);
+$funcionarios[] = new FuncionarioPJ("Joana", "Gerente", 1500, "159.753.486-00");
+
+// Listando os funcionários
+foreach ($funcionarios as $f) {
+    echo "Nome: " . $f->getNome() . "<br>";
+    echo "CPF: " . $f->getCpf() . "<br>";
+    echo "Cargo: " . $f->getCargo() . "<br>";
+    echo "Salário Calculado: R$ " . number_format($f->calcularSalario(), 2, ',', '.') . "<br><hr>";
+}
+?>
+</body>
+</html>
